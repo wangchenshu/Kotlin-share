@@ -1,0 +1,407 @@
+* [[https://kotlinlang.org/][Kotlin]]
+
+** What is Kotlin
+*** [[https://zh.wikipedia.org/zh-tw/Kotlin][zh_tw]]
+Kotlin是一種在 Java虛擬機上執行的靜態型別程式語言，
+它也可以被編譯成為JavaScript原始碼。它主要是由俄羅斯聖彼得堡的
+JetBrains開發團隊所發展出來的程式語言，其名稱來自於聖彼得堡附近的科特林島。
+在2012年一月的著名期刊Dr. Dobb's Journal中 Kotlin 被認為是該月份最佳語言。
+雖然跟 Java 語法並不相容，但 Kotlin 被設計成可以和 Java 程式碼相互運作，
+並可以重複使用如Java集合框架等的現有Java 類別庫。
+
+*** [[https://en.wikipedia.org/wiki/Kotlin_(programming_language)][en]]
+Kotlin is a statically-typed programming language that runs on the 
+Java Virtual Machine and also can be compiled to JavaScript source code. 
+Its primary development is from a team of JetBrains programmers based 
+in Saint Petersburg, Russia (the name comes from the Kotlin Island, near St. Petersburg).
+Kotlin was named Language of the Month in the January 2012 issue of Dr. Dobb's Journal.
+While not syntax compatible with Java, Kotlin is designed to interoperate with Java code 
+and is reliant on Java code from the existing Java Class Library, such as the collections 
+framework.
+
+** [[https://kotlinlang.org/docs/reference/basic-syntax.html][Basic Syntax]]
+*** Defining packages
+#+NAME: <name>
+#+BEGIN_SRC <language> <switches> <header arguments>
+package my.demo
+
+import java.util.*
+
+// ...
+#+END_SRC
+
+*** Defining functions
+**** Function having two Int parameters with Int return type:
+    #+NAME: <name>
+    #+BEGIN_SRC <language> <switches> <header arguments>
+    fun sum(a: Int, b: Int): Int {
+        return a + b
+    }
+    #+END_SRC  
+
+**** Function with an expression body and inferred return type:
+  #+NAME: <name>
+  #+BEGIN_SRC <language> <switches> <header arguments>
+      fun sum(a: Int, b: Int) = a + b
+  #+END_SRC
+
+**** Function returning no meaningful value:
+  #+NAME: <name>
+  #+BEGIN_SRC <language> <switches> <header arguments>
+  fun printSum(a: Int, b: Int): Unit {
+      print(a + b)
+  }
+  #+END_SRC
+  
+**** Unit return type can be omitted:
+  #+NAME: <name>
+  #+BEGIN_SRC <language> <switches> <header arguments>
+  fun printSum(a: Int, b: Int) {
+      print(a + b)
+  }
+  #+END_SRC
+
+*** Defining local variables
+**** Assign-once (read-only) local variable:
+#+NAME: <name>
+#+BEGIN_SRC <language> <switches> <header arguments>
+val a: Int = 1
+val b = 1   // `Int` type is inferred
+val c: Int  // Type required when no initializer is provided
+c = 1    
+#+END_SRC
+**** Mutable variable:
+#+NAME: <name>
+#+BEGIN_SRC <language> <switches> <header arguments>
+var x = 5 // `Int` type is inferred
+x += 1
+#+END_SRC
+
+*** Comments
+Just like Java and JavaScript, 
+Kotlin supports end-of-line and block comments.
+#+NAME: <name>
+#+BEGIN_SRC <language> <switches> <header arguments>
+// This is an end-of-line comment
+
+/* This is a block comment
+   on multiple lines. */
+#+END_SRC
+
+Unlike Java, block comments in Kotlin can be nested.
+
+*** Using string templates
+#+NAME: <name>
+#+BEGIN_SRC <language> <switches> <header arguments>
+fun main(args: Array<String>) {
+  if (args.size == 0) return
+
+  print("First argument: ${args[0]}")
+}
+#+END_SRC
+
+*** Using conditional expressions
+#+NAME: <name>
+#+BEGIN_SRC <language> <switches> <header arguments>
+fun max(a: Int, b: Int): Int {
+  if (a > b)
+    return a
+  else
+    return b
+}
+#+END_SRC
+
+**** Using if as an expression:
+fun max(a: Int, b: Int) = if (a > b) a else b
+
+*** Using nullable values and checking for null
+A reference must be explicitly marked as nullable when null value is possible.
+**** Return null if str does not hold an integer:
+#+NAME: <name>
+#+BEGIN_SRC <language> <switches> <header arguments>
+fun parseInt(str: String): Int? {
+  // ...
+}
+#+END_SRC
+
+**** Use a function returning nullable value:
+#+NAME: <name>
+#+BEGIN_SRC <language> <switches> <header arguments>
+fun main(args: Array<String>) {
+  if (args.size < 2) {
+    print("Two integers expected")
+    return
+  }
+
+  val x = parseInt(args[0])
+  val y = parseInt(args[1])
+
+  // Using `x * y` yields error because they may hold nulls.
+  if (x != null && y != null) {
+    // x and y are automatically cast to non-nullable after null check
+    print(x * y)
+  }
+}
+// or
+// ...
+  if (x == null) {
+    print("Wrong number format in '${args[0]}'")
+    return
+  }
+  if (y == null) {
+    print("Wrong number format in '${args[1]}'")
+    return
+  }
+
+  // x and y are automatically cast to non-nullable after null check
+  print(x * y)
+#+END_SRC
+
+*** Using type checks and automatic casts
+**** The is operator checks if an expression is an instance of a type.
+**** If an immutable local variable or property is checked for a specific type, there’s no need to cast it explicitly:
+#+NAME: <name>
+#+BEGIN_SRC <language> <switches> <header arguments>
+fun getStringLength(obj: Any): Int? {
+  if (obj is String) {
+    // `obj` is automatically cast to `String` in this branch
+    return obj.length
+  }
+
+  // `obj` is still of type `Any` outside of the type-checked branch
+  return null
+}
+// or 
+fun getStringLength(obj: Any): Int? {
+  if (obj !is String)
+    return null
+
+  // `obj` is automatically cast to `String` in this branch
+  return obj.length
+}
+// or even
+fun getStringLength(obj: Any): Int? {
+  // `obj` is automatically cast to `String` on the right-hand side of `&&`
+  if (obj is String && obj.length > 0)
+    return obj.length
+
+  return null
+}
+#+END_SRC
+
+*** Using a for loop
+#+NAME: <name>
+#+BEGIN_SRC <language> <switches> <header arguments>
+fun main(args: Array<String>) {
+  for (arg in args)
+    print(arg)
+}
+// or
+for (i in args.indices)
+  print(args[i])
+#+END_SRC
+
+*** Using a while loop
+#+NAME: <name>
+#+BEGIN_SRC <language> <switches> <header arguments>
+fun main(args: Array<String>) {
+  var i = 0
+  while (i < args.size)
+    print(args[i++])
+}
+#+END_SRC
+
+*** Using when expression
+#+NAME: <name>
+#+BEGIN_SRC <language> <switches> <header arguments>
+fun cases(obj: Any) {
+  when (obj) {
+    1          -> print("One")
+    "Hello"    -> print("Greeting")
+    is Long    -> print("Long")
+    !is String -> print("Not a string")
+    else       -> print("Unknown")
+  }
+}
+#+END_SRC
+
+*** Using ranges
+**** Check if a number is within a range using in operator:
+#+NAME: <name>
+#+BEGIN_SRC <language> <switches> <header arguments>
+if (x in 1..y-1)
+  print("OK")
+#+END_SRC
+
+**** Check if a number is out of range:
+#+NAME: <name>
+#+BEGIN_SRC <language> <switches> <header arguments>
+if (x !in 0..array.lastIndex)
+  print("Out")
+#+END_SRC
+
+**** Iterating over a range:
+#+NAME: <name>
+#+BEGIN_SRC <language> <switches> <header arguments>
+for (x in 1..5)
+  print(x)
+#+END_SRC
+
+*** Using collections
+**** Iterating over a collection:
+#+NAME: <name>
+#+BEGIN_SRC <language> <switches> <header arguments>
+for (name in names)
+  println(name)
+#+END_SRC
+
+**** Checking if a collection contains an object using in operator:
+#+NAME: <name>
+#+BEGIN_SRC <language> <switches> <header arguments>
+if (text in names) // names.contains(text) is called
+  print("Yes")
+#+END_SRC
+
+**** Using lambda expressions to filter and map collections:
+#+NAME: <name>
+#+BEGIN_SRC <language> <switches> <header arguments>
+names
+    .filter { it.startsWith("A") }
+    .sortedBy { it }
+    .map { it.toUpperCase() }
+    .forEach { print(it) }
+#+END_SRC
+
+** [[https://kotlinlang.org/docs/tutorials/koans.html][Kotlin Koans]]
+*** Download the Koans by cloning the project from GitHub
+git clone https://github.com/Kotlin/kotlin-koans
+
+** Kotlin Web Framework
+*** [[https://github.com/hhariri/wasabi][wasab]]
+An HTTP Framework
+
+*** [[https://github.com/Kotlin/ktor][ktor]]
+Web backend framework for Kotlin
+
+*** [[http://www.yested.net/][Yested Framework]]
+A Component based Web Framework for Kotlin
+
+*** [[http://karaframework.com/][Kara Web Framework]]
+Kara is an open source web framework for the JVM using the 
+Kotlin programming language.It uses Kotlin's unique syntax 
+to allow developers to write succinct, statically-typed HTML 
+and CSS all in one language.
+
+*** [[http://jonninja.github.io/node.kt/][Node.kt]]
+Node.kt is a web framework written in Kotlin inspired by many 
+of the ideas in Node.JS and the Express framework.
+
+** [[http://try.kotlinlang.org/][Try Kotlin]]
+** [[https://kotlinlang.org/docs/tutorials/command-line.html][Working with the Command Line Compiler]]
+*** Manual Install
+Unzip the standalone compiler into a directory and optionally add the bin directory to the system path. 
+The bin directory contains the scripts needed to compile and run Kotlin on Windows, OS X and Linux.
+
+*** SDKMAN!
+An easier way to install Kotlin on UNIX based systems such as OS X, Linux, Cygwin, FreeBSD and Solaris is by using SDKMAN!. Simply run the following in a terminal and follow any instructions:
+#+NAME: <name>
+#+BEGIN_SRC <language> <switches> <header arguments>
+$ curl -s get.sdkman.io | bash
+#+END_SRC
+
+Next open a new terminal and install Kotlin with:
+#+NAME: <name>
+#+BEGIN_SRC <language> <switches> <header arguments>
+$ sdk install kotlin
+#+END_SRC
+
+*** Homebrew
+Alternatively, on OS X you can install the compiler via Homebrew.
+#+NAME: <name>
+#+BEGIN_SRC <language> <switches> <header arguments>
+$ brew update
+$ brew install kotlin
+#+END_SRC
+
+*** Creating and running a first application
+**** Create a simple application in Kotlin that displays Hello, World!. Using our favorite editor, we create a new file called hello.kt with the following:
+#+NAME: <name>
+#+BEGIN_SRC <language> <switches> <header arguments>
+fun main(args: Array<String>) {
+    println("Hello, World!")
+}
+#+END_SRC
+
+**** Compile the application using the Kotlin compile
+#+NAME: <name>
+#+BEGIN_SRC <language> <switches> <header arguments>
+$ kotlinc hello.kt -include-runtime -d hello.jar
+#+END_SRC
+
+The -d option indicates what we want the output of the compiler to be called and may be either a directory name for class files or a .jar file name. The -include-runtime option makes the resulting .jar file self-contained and runnable by including the Kotlin runtime library in it. If you want to see all available options run
+
+#+NAME: <name>
+#+BEGIN_SRC <language> <switches> <header arguments>
+$ kotlinc -help
+#+END_SRC
+
+**** Run the application
+#+NAME: <name>
+#+BEGIN_SRC <language> <switches> <header arguments>
+$ java -jar hello.jar
+#+END_SRC
+
+*** Compiling a library
+**** If you’re developing a library to be used by other Kotlin applications, you can produce the .jar file without including the Kotlin runtime into it.
+#+NAME: <name>
+#+BEGIN_SRC <language> <switches> <header arguments>
+$ kotlinc hello.kt -d hello.jar
+#+END_SRC
+
+**** Since binaries compiled this way depend on the Kotlin runtime you should make sure the latter is present in the classpath whenever your compiled library is used.
+You can also use the kotlin script to run binaries produced by the Kotlin compiler:
+#+NAME: <name>
+#+BEGIN_SRC <language> <switches> <header arguments>
+$ kotlin -classpath hello.jar HelloKt
+#+END_SRC
+
+HelloKt is the main class name that the Kotlin compiler generates for the file named hello.kt.
+
+*** Running the REPL
+We can run the compiler without parameters to have an interactive shell. We can type any valid Kotlin code and see the results.
+#+NAME: <name>
+#+BEGIN_SRC <language> <switches> <header arguments>
+⋊> chenshuwang ~> kotlinc-jvm
+Welcome to Kotlin version 1.0.0-beta-4584 (JRE 1.8.0_66-b17)
+Type :help for help, :quit for quit
+>>> 2 + 2
+4
+>>> println("Hello Kotlin!")
+Hello Kotlin!
+>>> :quit
+#+END_SRC
+
+*** Using the command line to run scripts
+**** Kotlin can also be used as a scripting language. A script is a Kotlin source file (.kts) with top level executable code.
+#+NAME: <name>
+#+BEGIN_SRC <language> <switches> <header arguments>
+import java.io.File
+
+val folders = File(args[0]).listFiles { file -> file.isDirectory() }
+folders?.forEach { folder -> println(folder) }
+#+END_SRC
+
+**** To run a script, we just pass the -script option to the compiler with the corresponding script file.
+#+NAME: <name>
+#+BEGIN_SRC <language> <switches> <header arguments>
+$ kotlinc -script list_folders.kts <path_to_folder_to_inspect>
+#+END_SRC
+*** [[https://kotlinlang.slack.com][Kotlin Slack]]
+** Other
+*** [[http://vertx.io/][vertx]]
+Vert.x is a tool-kit for building reactive applications on the JVM.
+
+*** [[http://vertx.io/vertx2/][vertx2]]
+Vert.x is a lightweight, high performance application platform 
+for the JVM that's designed for modern mobile, web, 
+and enterprise applications.
